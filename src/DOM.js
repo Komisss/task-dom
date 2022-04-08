@@ -5,6 +5,11 @@
   Считаем, что всегда передается тег, допускающий вставку текста в качестве своего содержимого (P, DIV, I и пр.).
 */
 export function appendToBody(tag, content, count) {
+    for (let i = 0; i < count; i++) {
+        let elem = document.createElement(tag);
+        elem.innerHTML = content;
+        document.body.insertAdjacentElement('afterbegin', elem);
+    }
 }
 
 /*
@@ -14,7 +19,37 @@ export function appendToBody(tag, content, count) {
   Каждый элемент должен иметь класс вида item_n, где n - глубина вложенности элемента. (Нумерацию ведем с единицы).
   Сформированное дерево верните в качестве результата работы функции.
 */
+
+/**
+ * Здесь использовал идентичную функцию с +1 параметром внутри функции, т.к. следующий вид не проходил тесты, хотя был верен:
+    export function generatedTree(childrenCount, level, curLevel = 1){
+      const item = document.createElement("div");
+      item.className = `item_${curLevel}`;
+      if(curLevel < level){
+        const newLevel = curLevel + 1;
+        for(let i = 0; i < childrenCount; i++){
+          item.append(generatedTree(childrenCount, level, newLevel));
+        }
+      }
+      return item;
+    }
+ * @param {*} childrenCount 
+ * @param {*} level 
+ * @returns 
+ */
 export function generateTree(childrenCount, level) {
+    function gTree(childrenCount, level, curLevel = 1) {
+        const item = document.createElement('div');
+        item.className = `item_${curLevel}`;
+        if (curLevel < level) {
+            const newLevel = curLevel + 1;
+            for (let i = 0; i < childrenCount; i++) {
+                item.append(gTree(childrenCount, level, newLevel));
+            }
+        }
+        return item;
+    }
+    return gTree(childrenCount, level);
 }
 
 /*
@@ -26,4 +61,12 @@ export function generateTree(childrenCount, level) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function replaceNodes() {
+    let item = generateTree(2, 3);
+    for (let i = 0; i < 2; i++) {
+        item.getElementsByClassName('item_2')[i].outerHTML =
+            '<section class="item_2">' +
+            item.getElementsByClassName('item_2')[i].innerHTML +
+            '</section>';
+    }
+    return item;
 }
